@@ -59,11 +59,13 @@
   register: define_vm_results
   when: item.state != 'destroyed' and item.name not in vm_info
 
+- debug: var=define_vm_results
+
 - name: 'Set VM State'
   virt:
     name: '{{ item.name }}'
     state: '{{ item.state }}'
-  when: item.name in vm_info
+  when: item.name in vm_info or (define_vm_results.created is defined and define_vm_results.created == item.name)
 
 - name: Destroy cleanup
   include_tasks: destroy-cleanup.yml
