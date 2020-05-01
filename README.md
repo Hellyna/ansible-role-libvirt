@@ -2,6 +2,10 @@
 
 A simple role manages libvirt with default network and default storage pool (atm)
 
+`cloud-init` is supported.
+
+All VM names at the moment are tied to their respective storage `.img` and `.iso`(cloud init generated file) names in the default pool. On destroy (`state: destroyed`) they will be deleted as well. Hence, non unique VM names are not supported at this moment. Do take note of this before you want to run a playbook with a VM set to be destroyed.
+
 * [How default network is created](/templates/network.xml.j2)
 * [How default storage is created](/tasks/ensure-default-storage-pool.yml)
 
