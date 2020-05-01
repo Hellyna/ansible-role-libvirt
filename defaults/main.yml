@@ -1,0 +1,2 @@
+---
+libvirt_default_pool_dir: /var/lib/libvirt/images

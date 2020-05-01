@@ -1,0 +1,21 @@
+---
+- name: 'Stat base image'
+  stat:
+    path: '{{ libvirt_default_pool_dir }}/{{ item.import_image | basename }}'
+  register: stat_base_image
+  when: not libvirt__recreate
+
+- name: 'Import base image'
+  command:
+    argv:
+      - qemu-img
+      - convert
+      - -O
+      - qcow2
+      - '{{ item.import_image }}'
+      - '{{ libvirt_default_pool_dir }}/{{ item.import_image | basename }}'
+  when: libvirt__recreate or not stat_base_image.stat.exists
+
+- name: 'Set base image'
+  set_fact:
+    libvirt__base_image: '{{ libvirt_default_pool_dir }}/{{ item.import_image | basename }}'

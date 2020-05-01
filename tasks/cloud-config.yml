@@ -1,0 +1,44 @@
+---
+- name: 'Create cloud config tmpdir'
+  tempfile:
+    state: directory
+  register: cloud_config_tmpdir
+
+- name: 'Write cloud config'
+  template:
+    src: 'cloud-config.yml.j2'
+    dest: '{{ cloud_config_tmpdir.path }}/cloud-config.yml'
+
+- name: 'Write network config'
+  template:
+    src: 'network-config.yml.j2'
+    dest: '{{ cloud_config_tmpdir.path }}/network-config.yml'
+  when: item.network_config is defined
+
+- name: 'Create cloud config iso'
+  command:
+    argv:
+      - cloud-localds
+      - -v
+      - --hostname
+      - '{{ item.name }}'
+      - '{{ libvirt_default_pool_dir }}/{{ item.name }}.iso'
+      - '{{ cloud_config_tmpdir.path }}/cloud-config.yml'
+  when: item.network_config is not defined
+
+- name: 'Create cloud config iso'
+  command:
+    argv:
+      - cloud-localds
+      - -v
+      - --hostname
+      - '{{ item.name }}'
+      - '--network-config={{ cloud_config_tmpdir.path }}/network-config.yml'
+      - '{{ libvirt_default_pool_dir }}/{{ item.name }}.iso'
+      - '{{ cloud_config_tmpdir.path }}/cloud-config.yml'
+  when: item.network_config is defined
+
+- name: 'Delete cloud config tmpdir'
+  file:
+    path: '{{ cloud_config_tmpdir.path }}'
+    state: absent

@@ -1,0 +1,16 @@
+---
+- name: 'Undefine VM'
+  virt:
+    command: undefine
+    name: '{{ item.name }}'
+
+- name: 'Delete VM Data'
+  file:
+    path: '{{ libvirt_default_pool_dir }}/{{ item.name }}.{{ ext }}'
+    state: absent
+  loop:
+    - img
+    - iso
+  loop_control:
+    loop_var: ext
+

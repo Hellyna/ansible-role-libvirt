@@ -1,0 +1,12 @@
+---
+- name: 'Network define'
+  virt_net:
+    command: define
+    name: default
+    xml: '{{ lookup("template", "network.xml.j2") }}'
+
+- name: 'Network active'
+  virt_net:
+    name: default
+    state: active
+

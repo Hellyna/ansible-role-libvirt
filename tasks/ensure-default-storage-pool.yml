@@ -1,0 +1,30 @@
+---
+
+# TODO: idempotent way of ensuring storage is present; currently does not detect storage that has been destroyed or inactive
+- name: 'Stat default storage pool directory'
+  stat:
+    path: '{{ libvirt_default_pool_dir }}'
+  register: libvirt_stat_default_storage_pool_dir_result
+
+- name: 'Define default storage pool'
+  command:
+    argv:
+      - virsh
+      - pool-create-as
+      - default
+      - dir
+      - '-'
+      - '-'
+      - '-'
+      - '-'
+      - '{{ libvirt_default_pool_dir }}'
+      - --build
+  when: not libvirt_stat_default_storage_pool_dir_result.stat.exists
+
+- name: 'Autostart default storage pool'
+  command:
+    argv:
+      - virsh
+      - pool-autostart
+      - default
+  when: not libvirt_stat_default_storage_pool_dir_result.stat.exists

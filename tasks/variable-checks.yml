@@ -1,0 +1,26 @@
+---
+- name: 'Variable check'
+  assert:
+    that:
+      - item.state is defined
+      - item.name is defined
+
+- name: 'Check variables if VM does not exists'
+  assert:
+    that:
+      - item.os_id is defined
+      - item.memory_megabytes is defined
+      - item.volume_size is defined
+  when: item.state != 'destroyed' and item.name not in vm_info
+
+- name: 'Stat image'
+  stat:
+    path: '{{ libvirt_default_pool_dir }}/{{ item.name }}.img'
+  register: stat_image
+  when: item.state != 'destroyed'
+
+- name: 'Variable check'
+  assert:
+    that:
+      - (item.import_image_url is defined and item.import_image_url_checksum is defined) or item.import_image is defined
+  when: item.state != 'destroyed' and (libvirt__recreate or not stat_image.stat.exists)

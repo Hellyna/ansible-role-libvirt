@@ -1,0 +1,11 @@
+---
+
+- name: Ensure default storage pool
+  include_tasks: ensure-default-storage-pool.yml
+
+- name: Ensure default network
+  include_tasks: ensure-default-network.yml
+
+- name: Manage VMs
+  include_tasks: vm.yml
+  with_items: '{{ libvirt_vms }}'

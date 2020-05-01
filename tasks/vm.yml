@@ -1,0 +1,76 @@
+---
+
+# TODO: Import and other types of images that is not qcow2
+- name: 'VM Info'
+  virt:
+    name: '{{ item.name }}'
+    command: info
+  register: vm_info
+
+- name: Set default variables
+  set_fact:
+    libvirt__recreate: '{{ item.recreate is defined and (item.recreate|bool) }}'
+
+- name: Variable checks
+  include_tasks: variable-checks.yml
+
+- name: 'Set VM State'
+  virt:
+    name: '{{ item.name }}'
+    state: shutdown
+  when: item.state != 'destroyed' and item.name in vm_info and libvirt__recreate
+
+- name: Import local image
+  include_tasks: import-local-image.yml
+  when: item.state != 'destroyed' and item.import_image is defined
+
+- name: Import image from URL
+  include_tasks: import-image-from-url.yml
+  when: item.state != 'destroyed' and item.import_image is not defined and item.import_image_url is defined
+
+- name: Generate network MAC
+  set_fact:
+    libvirt__network_mac: '{{ "52:54:00" | random_mac }}'
+  when: item.state != 'destroyed' and item.name not in vm_info
+
+- name: Create cloud config
+  include_tasks: cloud-config.yml
+  when: item.state != 'destroyed' and item.cloud_config is defined and item.name not in vm_info
+
+- name: 'Base VM image on base image'
+  command:
+    argv:
+      - qemu-img
+      - create
+      - -f
+      - qcow2
+      - -F
+      - qcow2
+      - -b
+      - '{{ libvirt__base_image }}'
+      - '{{ libvirt_default_pool_dir }}/{{ item.name }}.img'
+      - '{{ item.volume_size }}'
+  when: item.state != 'destroyed' and (not stat_image.stat.exists or libvirt__recreate)
+
+- name: Define VM
+  virt:
+    command: define
+    xml: '{{ lookup("template", "kvm.xml.j2") }}'
+  register: define_vm_results
+  when: item.state != 'destroyed' and item.name not in vm_info
+
+- name: 'Set VM State'
+  virt:
+    name: '{{ item.name }}'
+    state: '{{ item.state }}'
+  when: item.name in vm_info
+
+- name: Destroy cleanup
+  include_tasks: destroy-cleanup.yml
+  when: item.state == 'destroyed' and item.name in vm_info
+
+- name: Unset variables
+  set_fact:
+    libvirt__recreate:
+    libvirt__base_image:
+    libvirt__network_mac:
