@@ -31,6 +31,8 @@ libvirt_vms:
           lock_passwd: true
       ssh_pwauth: false
       disable_root: false
+      ssh-authorized-keys:
+        - <your ssh pubkey>
     network_config:
       version: 2
       ethernets:
@@ -44,3 +46,7 @@ libvirt_vms:
               - 1.1.1.1
               - 1.0.0.1
 ```
+
+## Caveats
+
+Make sure that your interfaces in the ethernets field exist in the system. Otherwise `cloud-init` will fail silently.
