@@ -6,7 +6,11 @@ A simple role manages libvirt with default network and default storage pool (atm
 
 All VM names at the moment are tied to their respective storage `.img` and `.iso`(cloud init generated file) names in the default pool. On destroy (`state: destroyed`) they will be deleted as well. Hence, non unique VM names are not supported at this moment. Do take note of this before you want to run a playbook with a VM set to be destroyed.
 
-`state` refers to the state described in https://docs.ansible.com/ansible/latest/modules/virt_module.html.
+This role does not install `libvirt` or start its daemon.
+
+# Legend
+  * `state` refers to the state described in https://docs.ansible.com/ansible/latest/modules/virt_module.html.
+  * `os_id` refers to the id described in the output of `osinfo-query os`
 
 # Example usage (vars):
 
