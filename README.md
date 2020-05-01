@@ -1,9 +1,9 @@
 # ansible-role-libvirt
 
-A simple role manages libvirt with default network and default storage (atm)
+A simple role manages libvirt with default network and default storage pool (atm)
 
 * [How default network is created](/templates/network.xml.j2)
-* [How default storage is created](/tasks/ensure-default-storage.yml)
+* [How default storage is created](/tasks/ensure-default-storage-pool.yml)
 
 Also look at files in the [defaults](/defaults) directory.
 
