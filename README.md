@@ -28,10 +28,10 @@ libvirt_vms:
       hostname: test
       fqdn: test.localdomain
       users:
-        - name: admin
+        - name: srvadmin
           sudo: ALL=(ALL) NOPASSWD:ALL
           groups: users, admin
-          home: /home/admin
+          home: /home/srvadmin
           shell: /bin/bash
           lock_passwd: true
       ssh_pwauth: false
