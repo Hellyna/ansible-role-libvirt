@@ -28,10 +28,10 @@
   include_tasks: import-image-from-url.yml
   when: item.state != 'destroyed' and item.import_image is not defined and item.import_image_url is defined
 
-- name: Generate network MAC
+- name: Set base image
   set_fact:
-    libvirt__network_mac: '{{ "52:54:00" | random_mac }}'
-  when: item.state != 'destroyed' and item.name not in vm_info
+    libvirt__base_image: '{{ libvirt_default_pool_dir }}/{{ item.base_image }}'
+  when: item.state != 'destroyed' and item.import_image is not defined and item.import_image_url is not defined
 
 - name: Create cloud config
   include_tasks: cloud-config.yml
@@ -75,4 +75,3 @@
   set_fact:
     libvirt__recreate:
     libvirt__base_image:
-    libvirt__network_mac:

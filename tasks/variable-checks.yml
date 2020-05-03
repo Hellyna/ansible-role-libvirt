@@ -22,5 +22,5 @@
 - name: 'Variable check'
   assert:
     that:
-      - (item.import_image_url is defined and item.import_image_url_checksum is defined) or item.import_image is defined
+      - item.base_image is defined or (item.import_image_url is defined and item.import_image_url_checksum is defined) or item.import_image is defined
   when: item.state != 'destroyed' and (libvirt__recreate or not stat_image.stat.exists)
