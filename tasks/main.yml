@@ -1,5 +1,10 @@
 ---
 
+- name: Ensure libvirtd started
+  service:
+    name: '{{ libvirt_systemd_service }}'
+    state: started
+
 - name: Ensure default storage pool
   include_tasks: ensure-default-storage-pool.yml
 
